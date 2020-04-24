@@ -15,9 +15,9 @@ namespace Save_A_Soul.Models
         public string Photo { get; set; }
         public string Description { get; set; }
         public float Weight { get; set; }
-        public Shelter Shelter { get; set; }
-        public List<Favorite> Favorites { get; set; }
-        public Adoption Adoption { get; set; }
+        public virtual Shelter Shelter { get; set; }
+        public virtual List<Favorite> Favorites { get; set; }
+        public virtual Adoption Adoption { get; set; }
 
     }
 }

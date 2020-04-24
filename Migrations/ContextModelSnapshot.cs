@@ -37,7 +37,7 @@ namespace SaveASoul.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Address");
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("Save_A_Soul.Models.Adoption", b =>

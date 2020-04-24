@@ -18,5 +18,9 @@ namespace Save_A_Soul.DTOs
         public float Weight { get; set; }
         public int ShelterId { get; set; }
 
+        //public static implicit operator List<object>(AnimalDTO v)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

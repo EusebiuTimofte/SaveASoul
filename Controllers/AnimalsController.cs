@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Save_A_Soul.Contexts;
 using Save_A_Soul.Models;
+using Save_A_Soul.DTOs;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace SaveASoul.Controllers
 {
@@ -21,11 +23,37 @@ namespace SaveASoul.Controllers
             _context = context;
         }
 
-        // GET: api/Animals
+
+        // GET: api/Animals 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Animal>>> GetAnimals()
+        [Route("GetAnimals")]
+        public JsonResult GetAnimals()
         {
-            return await _context.Animals.ToListAsync();
+
+            var animals = _context.Animals.ToList();
+
+            List<AnimalDTO> dto = new List<AnimalDTO>();
+
+            foreach (Animal animal in animals)
+            {
+                AnimalDTO _dto = new AnimalDTO
+                {
+                    Id = animal.Id,
+                    Name = animal.Name,
+                    Age = animal.Age,
+                    Species = animal.Species,
+                    Breed = animal.Breed,
+                    Photo = animal.Photo,
+                    Description = animal.Description,
+                    Weight = animal.Weight,
+                    ShelterId = animal.Shelter.Id
+                };
+
+                dto.Add(_dto);
+            }
+            JsonResult jsonAnimal = new JsonResult(dto);
+
+            return jsonAnimal;
         }
 
         // GET: api/Animals/5

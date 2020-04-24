@@ -15,6 +15,6 @@ namespace Save_A_Soul.Models
         public string JobType { get; set; }
         public string Position  { get; set; }
 
-        public Shelter Shelter { get; set; }
+        public virtual Shelter Shelter { get; set; }
     }
 }

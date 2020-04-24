@@ -19,23 +19,38 @@ namespace Save_A_Soul.Models
                 {
                     return;   // DB has been seeded
                 }
-
+                context.Shelters.Add(
+                    new Shelter
+                    {
+                        Id = 1,
+                        Name = "TimofteHome"
+                    }
+                    );
                 context.Animals.AddRange(
                     new Animal
                     {
                         Name = "Pussy",
                         Weight = 1.23F,
                         Age = 1,
-                        Breed = "brazilia"
-                        
+                        Breed = "brazilia",
+                        Shelter = new Shelter
+                        {
+                            Id = 1,
+                            Name = "TimofteHome"
+                        }
                     },
 
                     new Animal
                     {
-                        Name = "Pussy2",
+                        Name = "gat",
                         Weight = 1.233F,
                         Age = 12,
-                        Breed = "brazilia"
+                        Breed = "brazilia",
+                        Shelter = new Shelter
+                        {
+                            Id = 1,
+                            Name = "TimofteHome"
+                        }
                     },
 
                     new Animal
@@ -43,7 +58,12 @@ namespace Save_A_Soul.Models
                         Name = "Azorel",
                         Weight = 3.98F,
                         Age = 1,
-                        Breed = "big boy"
+                        Breed = "big boy",
+                        Shelter = new Shelter
+                        {
+                            Id = 1,
+                            Name = "TimofteHome"
+                        }
                     },
 
                     new Animal
@@ -51,7 +71,12 @@ namespace Save_A_Soul.Models
                         Name = "Zdreanta cel cu ochy de faiantza",
                         Weight = 2F,
                         Age = 3,
-                        Breed = "smol boy"
+                        Breed = "smol boy",
+                        Shelter = new Shelter
+                        {
+                            Id = 1,
+                            Name = "TimofteHome"
+                        }
                     }
                 ) ;
                 context.SaveChanges();
