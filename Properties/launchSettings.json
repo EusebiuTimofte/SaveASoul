@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/Animals/GetAnimals",
+      "launchUrl": "api/Animals",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -9,6 +9,7 @@ using Save_A_Soul.Contexts;
 using Save_A_Soul.Models;
 using Save_A_Soul.DTOs;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace SaveASoul.Controllers
 {
@@ -17,19 +18,15 @@ namespace SaveASoul.Controllers
     public class AnimalsController : ControllerBase
     {
         private readonly Context _context;
-
         public AnimalsController(Context context)
         {
             _context = context;
         }
 
-
         // GET: api/Animals 
         [HttpGet]
-        [Route("GetAnimals")]
         public JsonResult GetAnimals()
         {
-
             var animals = _context.Animals.ToList();
 
             List<AnimalDTO> dto = new List<AnimalDTO>();
@@ -58,16 +55,30 @@ namespace SaveASoul.Controllers
 
         // GET: api/Animals/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Animal>> GetAnimal(int id)
+        public async Task<JsonResult> GetAnimal(int id)
         {
             var animal = await _context.Animals.FindAsync(id);
 
             if (animal == null)
             {
-                return NotFound();
+                return new JsonResult("not found");
             }
 
-            return animal;
+            AnimalDTO dto = new AnimalDTO
+            {
+                Id = animal.Id,
+                Name = animal.Name,
+                Age = animal.Age,
+                Species = animal.Species,
+                Breed = animal.Breed,
+                Photo = animal.Photo,
+                Description = animal.Description,
+                Weight = animal.Weight,
+                ShelterId = animal.Shelter.Id
+            };
+            
+
+            return new JsonResult(dto);
         }
 
         // PUT: api/Animals/5
@@ -106,12 +117,29 @@ namespace SaveASoul.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Animal>> PostAnimal(Animal animal)
+        public async Task<JsonResult> PostAnimal(AnimalDTO animal)
         {
-            _context.Animals.Add(animal);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAnimal", new { id = animal.Id }, animal);
+            Animal _animal = new Animal
+            {
+                Name = animal.Name,
+                Age = animal.Age,
+                Species = animal.Species,
+                Breed = animal.Breed,
+                Photo = animal.Photo,
+                Description = animal.Description,
+                Weight = animal.Weight,
+                Shelter = _context.Shelters.Find(animal.ShelterId)
+            };
+           
+            EntityEntry<Animal> add =_context.Animals.Add(_animal);
+
+            await _context.SaveChangesAsync();
+            //TODO: returneaza id=0
+            //_context.Entry(add).State = EntityState.Modified;
+            // return CreatedAtAction("GetAnimal", new { id = add.Entity.Id }, animal);
+            animal.Id = _animal.Id;
+            return new JsonResult(animal);
         }
 
         // DELETE: api/Animals/5
