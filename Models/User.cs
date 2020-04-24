@@ -14,8 +14,8 @@ namespace Save_A_Soul.Models
         public string Email { get; set; }
         public string Password { get; set; }
 
-        public virtual List<Adoption> Adoption { get; set; }
+        public List<Adoption> Adoption { get; set; }
 
-        public virtual List<Favorite> Favorites { get; set; }
+        public List<Favorite> Favorites { get; set; }
     }
 }

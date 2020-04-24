@@ -10,8 +10,8 @@ namespace Save_A_Soul.Models
         //public int Id { get; set; }
         public DateTime AdoptionTime { get; set; }
         public int AnimalId { get; set; }
-        public virtual Animal Animal { get; set; }
+        public Animal Animal { get; set; }
         public int UserId { get; set; }
-        public virtual User User { get; set; }
+        public User User { get; set; }
     }
 }

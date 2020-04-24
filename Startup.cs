@@ -11,8 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore.Proxies;
-
 using Save_A_Soul.Contexts;
 namespace SaveASoul
 {
@@ -29,10 +27,8 @@ namespace SaveASoul
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-           // services.AddDbContext<Context>(options =>
-           // options.UseSqlServer(Configuration.GetConnectionString("Context")));
-            services.AddDbContext<Context>(options => options.UseLazyLoadingProxies()
-                .UseSqlServer(Configuration.GetConnectionString("Context")));
+            services.AddDbContext<Context>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("Context")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,7 +47,7 @@ namespace SaveASoul
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute("default", "{controller=Animals}/{action=GetAnimals}");
+                endpoints.MapControllers();
             });
         }
     }

@@ -12,7 +12,7 @@ namespace SaveASoul.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : Controller
+    public class UsersController : ControllerBase
     {
         private readonly Context _context;
 
@@ -26,8 +26,6 @@ namespace SaveASoul.Controllers
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             return await _context.Users.ToListAsync();
-           
-                
         }
 
         // GET: api/Users/5
