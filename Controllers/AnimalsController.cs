@@ -43,7 +43,7 @@ namespace SaveASoul.Controllers
                     Photo = animal.Photo,
                     Description = animal.Description,
                     Weight = animal.Weight,
-                    ShelterId = animal.Shelter.Id
+                    ShelterId = (animal.Shelter != null) ? animal.Shelter.Id : 0
                 };
 
                 dto.Add(_dto);
@@ -132,7 +132,7 @@ namespace SaveASoul.Controllers
                 Shelter = _context.Shelters.Find(animal.ShelterId)
             };
            
-            EntityEntry<Animal> add =_context.Animals.Add(_animal);
+            _context.Animals.Add(_animal);
 
             await _context.SaveChangesAsync();
            
