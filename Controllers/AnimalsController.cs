@@ -135,9 +135,7 @@ namespace SaveASoul.Controllers
             EntityEntry<Animal> add =_context.Animals.Add(_animal);
 
             await _context.SaveChangesAsync();
-            //TODO: returneaza id=0
-            //_context.Entry(add).State = EntityState.Modified;
-            // return CreatedAtAction("GetAnimal", new { id = add.Entity.Id }, animal);
+           
             animal.Id = _animal.Id;
             return new JsonResult(animal);
         }
