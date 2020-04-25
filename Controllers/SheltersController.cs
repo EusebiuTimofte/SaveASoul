@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Save_A_Soul.Contexts;
 using Save_A_Soul.Models;
+using Save_A_Soul.DTOs;
 
 namespace SaveASoul.Controllers
 {
@@ -23,9 +24,26 @@ namespace SaveASoul.Controllers
 
         // GET: api/Shelters
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Shelter>>> GetShelters()
+        public async Task<JsonResult> GetShelters()
         {
-            return await _context.Shelters.ToListAsync();
+            var shelters =  await _context.Shelters.ToListAsync();
+
+            List<ShelterDTO> sheltersReturn = new List<ShelterDTO>();
+
+            foreach(Shelter shelter in shelters)
+            {
+                ShelterDTO tempShelter = new ShelterDTO
+                {
+                    Id = shelter.Id,
+                    Name = shelter.Name,
+                    AddressId = shelter.Address.Id,
+                    Description = shelter.Description,
+                    BankAccout = shelter.BankAccout
+                };
+                sheltersReturn.Add(tempShelter);
+            }
+
+            return new JsonResult(sheltersReturn);
         }
 
         // GET: api/Shelters/5
