@@ -48,13 +48,13 @@ namespace SaveASoul.Controllers
 
         // GET: api/Shelters/5
         [HttpGet("{id}")]
-        public async Task<JsonResult> GetShelter(int id)
+        public async Task<ActionResult> GetShelter(int id)
         {
             var shelter = await _context.Shelters.FindAsync(id);
 
             if (shelter == null)
             {
-                return new JsonResult(String.Format("No shelter with id = {0} found", id));
+                return NotFound(String.Format("No shelter with id = {0} found", id));
             }
 
             ShelterDTO tempShelter = new ShelterDTO

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Save_A_Soul.Contexts;
@@ -23,39 +22,79 @@ namespace SaveASoul.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<JsonResult> GetUsers()
         {
-            return await _context.Users.ToListAsync();
-           
-                
+            var users = await _context.Users.ToListAsync();
+            List<UserDTO> usersReturn = new List<UserDTO>();
+            foreach(User user in users)
+            {
+                UserDTO tempUser = new UserDTO
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    CNP = user.CNP,
+                    Email = user.Email,
+                    Password = user.Password
+                };
+
+                usersReturn.Add(tempUser);
+            }
+            return new JsonResult(usersReturn);
+
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult> GetUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
             {
-                return NotFound();
+
+                return NotFound("User you're looking for doesn't exist");
             }
 
-            return user;
+            UserDTO returnUser = new UserDTO
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                CNP = user.CNP,
+                Email = user.Email,
+                Password = user.Password
+            };
+
+            return new JsonResult(returnUser);
         }
 
         // PUT: api/Users/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, UserDTO user)
         {
             if (id != user.Id)
             {
-                return BadRequest();
+                return BadRequest("id din url trb sa fie acelasi cu id din body");
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            User userForDB = _context.Users.Find(id);
+
+            if (userForDB == null)
+            {
+                return NotFound("User you want to edit doesn't exist");
+            }
+
+            userForDB.Id = user.Id;
+            userForDB.FirstName = user.FirstName;
+            userForDB.LastName = user.LastName;
+            userForDB.CNP = user.CNP;
+            userForDB.Email = user.Email;
+            userForDB.Password = user.Password;
+
+            _context.Entry(userForDB).State = EntityState.Modified;
 
             try
             {
@@ -73,35 +112,55 @@ namespace SaveASoul.Controllers
                 }
             }
 
-            return NoContent();
+            return new JsonResult(user);
         }
 
         // POST: api/Users
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult> PostUser(UserDTO user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
 
+            User userForDB = new User
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                CNP = user.CNP,
+                Email = user.Email,
+                Password = user.Password
+            };
+
+            _context.Users.Add(userForDB);
+            await _context.SaveChangesAsync();
+            user.Id = userForDB.Id;
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(int id)
+        public async Task<ActionResult> DeleteUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("nu iaste domle useru in bd");
             }
+
+            UserDTO returnUser = new UserDTO
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                CNP = user.CNP,
+                Email = user.Email,
+                Password = user.Password
+            };
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
-            return user;
+            return new JsonResult(returnUser);
         }
 
         private bool UserExists(int id)
