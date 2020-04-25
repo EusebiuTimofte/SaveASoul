@@ -25,8 +25,8 @@ namespace Save_A_Soul.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Adoption>().HasKey(c => new { c.AnimalId, c.UserId });
-            modelBuilder.Entity<Favorite>().HasKey(c => new { c.AnimalId, c.UserId });
+            modelBuilder.Entity<Adoption>().HasKey(c => new { c.UserId, c.AnimalId });
+            modelBuilder.Entity<Favorite>().HasKey(c => new { c.UserId, c.AnimalId });
         }
 
 

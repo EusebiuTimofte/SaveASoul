@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Save_A_Soul.Contexts;
 
 namespace SaveASoul.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20200425094629_PrimaryKeyOrder")]
+    partial class PrimaryKeyOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,19 +80,21 @@ namespace SaveASoul.Migrations
 
             modelBuilder.Entity("Save_A_Soul.Models.Adoption", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("AnimalId")
                         .HasColumnType("int");
 
-                    b.Property<int>("AnimalId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("AdoptionTime")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("UserId", "AnimalId");
+                    b.HasKey("AnimalId", "UserId");
 
                     b.HasIndex("AnimalId")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Adoptions");
                 });
@@ -170,15 +174,15 @@ namespace SaveASoul.Migrations
 
             modelBuilder.Entity("Save_A_Soul.Models.Favorite", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.Property<int>("AnimalId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "AnimalId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("AnimalId");
+                    b.HasKey("AnimalId", "UserId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Favorites");
                 });

@@ -28,9 +28,12 @@ namespace SaveASoul
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-           // services.AddDbContext<Context>(options =>
-           // options.UseSqlServer(Configuration.GetConnectionString("Context")));
+            //services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
+            // services.AddDbContext<Context>(options =>
+            // options.UseSqlServer(Configuration.GetConnectionString("Context")));
             services.AddDbContext<Context>(options => options.UseLazyLoadingProxies()
                 .UseSqlServer(Configuration.GetConnectionString("Context")));
         }

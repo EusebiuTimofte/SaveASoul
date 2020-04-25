@@ -11,10 +11,8 @@ namespace Save_A_Soul.Models
     {
         //public int Id { get; set; }
         
-        [Column(Order = 1)]
         public int UserId { get; set; }
         public virtual User User { get; set; }
-        [Column(Order = 2)]
         public int AnimalId { get; set; }
         public virtual Animal Animal { get; set; }
     }
