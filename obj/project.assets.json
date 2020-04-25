@@ -8847,25 +8847,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Florin\\.nuget\\packages\\": {},
-    "C:\\Microsoft\\Xamarin\\NuGet\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\Euseb\\.nuget\\packages\\": {},
+    "C:\\Microsoft\\Xamarin\\NuGet\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Florin\\Desktop\\Anul III - Sem II\\MetodeDezvoltareSoftware\\ProiectSAS\\SaveASoul\\SaveASoul.csproj",
+      "projectUniqueName": "C:\\Users\\Euseb\\source\\repos\\project\\SaveASoul\\SaveASoul.csproj",
       "projectName": "SaveASoul",
-      "projectPath": "C:\\Users\\Florin\\Desktop\\Anul III - Sem II\\MetodeDezvoltareSoftware\\ProiectSAS\\SaveASoul\\SaveASoul.csproj",
-      "packagesPath": "C:\\Users\\Florin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Florin\\Desktop\\Anul III - Sem II\\MetodeDezvoltareSoftware\\ProiectSAS\\SaveASoul\\obj\\",
+      "projectPath": "C:\\Users\\Euseb\\source\\repos\\project\\SaveASoul\\SaveASoul.csproj",
+      "packagesPath": "C:\\Users\\Euseb\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Euseb\\source\\repos\\project\\SaveASoul\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Microsoft\\Xamarin\\NuGet\\",
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        "C:\\Microsoft\\Xamarin\\NuGet\\"
       ],
       "configFilePaths": [
-        "C:\\Users\\Florin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Euseb\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
