@@ -14,7 +14,7 @@ namespace SaveASoul.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowCrossSite]
+    
     public class SheltersController : ControllerBase
     {
         private readonly Context _context;
