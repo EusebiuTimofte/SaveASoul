@@ -10,11 +10,13 @@ using Save_A_Soul.Models;
 using Save_A_Soul.DTOs;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using SaveASoul.Cors;
 
 namespace SaveASoul.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class AnimalsController : ControllerBase
     {
         private readonly Context _context;
@@ -43,7 +45,7 @@ namespace SaveASoul.Controllers
                     Photo = animal.Photo,
                     Description = animal.Description,
                     Weight = animal.Weight,
-                    ShelterId = animal.Shelter.Id
+                    ShelterId = (animal.Shelter != null) ? animal.Shelter.Id : 0
                 };
 
                 dto.Add(_dto);
@@ -55,13 +57,13 @@ namespace SaveASoul.Controllers
 
         // GET: api/Animals/5
         [HttpGet("{id}")]
-        public async Task<JsonResult> GetAnimal(int id)
+        public async Task<ActionResult> GetAnimal(int id)
         {
             var animal = await _context.Animals.FindAsync(id);
 
             if (animal == null)
             {
-                return new JsonResult("not found");
+                return NotFound();
             }
 
             AnimalDTO dto = new AnimalDTO
@@ -85,14 +87,27 @@ namespace SaveASoul.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAnimal(int id, Animal animal)
+        public async Task<IActionResult> PutAnimal(int id, AnimalDTO animal)
         {
             if (id != animal.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(animal).State = EntityState.Modified;
+            Animal animalForDB = new Animal()
+            {
+                Id = animal.Id,
+                Name = animal.Name,
+                Age = animal.Age,
+                Species = animal.Species,
+                Breed = animal.Breed,
+                Photo = animal.Photo,
+                Description = animal.Description,
+                Weight = animal.Weight,
+                Shelter = _context.Shelters.Find(animal.ShelterId)
+            };
+
+            _context.Entry(animalForDB).State = EntityState.Modified;
 
             try
             {
@@ -132,12 +147,10 @@ namespace SaveASoul.Controllers
                 Shelter = _context.Shelters.Find(animal.ShelterId)
             };
            
-            EntityEntry<Animal> add =_context.Animals.Add(_animal);
+            _context.Animals.Add(_animal);
 
             await _context.SaveChangesAsync();
-            //TODO: returneaza id=0
-            //_context.Entry(add).State = EntityState.Modified;
-            // return CreatedAtAction("GetAnimal", new { id = add.Entity.Id }, animal);
+           
             animal.Id = _animal.Id;
             return new JsonResult(animal);
         }

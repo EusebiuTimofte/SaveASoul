@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Save_A_Soul.Contexts;
+using Save_A_Soul.DTOs;
 using Save_A_Soul.Models;
+using SaveASoul.Cors;
 
 namespace SaveASoul.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class FavoritesController : ControllerBase
     {
         private readonly Context _context;
@@ -23,30 +26,88 @@ namespace SaveASoul.Controllers
 
         // GET: api/Favorites
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Favorite>>> GetFavorites()
+        public async Task<JsonResult> GetFavorites()
         {
-            return await _context.Favorites.ToListAsync();
-        }
+            List<Favorite>favorites = await _context.Favorites.ToListAsync();
 
-        // GET: api/Favorites/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Favorite>> GetFavorite(int id)
-        {
-            var favorite = await _context.Favorites.FindAsync(id);
+            List<FavoriteDTO> favoriteDTOs = new List<FavoriteDTO>();
 
-            if (favorite == null)
+            foreach(Favorite favorite in favorites)
             {
-                return NotFound();
+                FavoriteDTO tempFav = new FavoriteDTO
+                {
+                    UserId = favorite.UserId,
+                    AnimalId = favorite.AnimalId
+                };
+                favoriteDTOs.Add(tempFav);
             }
 
-            return favorite;
+            return new JsonResult(favoriteDTOs);
         }
 
-        // PUT: api/Favorites/5
+        // GET: api/Favorites/ofUser/5
+        [Route("ofUser/{id}")]
+        [HttpGet] 
+        public async Task<JsonResult> GetFavoritesAnimalsOfUser(int id)
+        {
+            var favorites = await _context.Favorites.ToListAsync();
+            if (favorites == null)
+            {
+                return new JsonResult("Nu a putut lua din BD inregistrarile din tabelul Favorites");
+            }
+            List<FavoriteDTO> userFavorites = new List<FavoriteDTO>();
+
+            foreach(Favorite favorite in favorites)
+            {
+                if (favorite.UserId == id)
+                {
+                    FavoriteDTO userFavorite = new FavoriteDTO
+                    {
+                        UserId = favorite.UserId,
+                        AnimalId = favorite.AnimalId
+                    };
+                    userFavorites.Add(userFavorite);
+                } 
+            }
+
+            return new JsonResult(userFavorites);
+        }
+
+
+        // GET: api/Favorites/ofAnimal/5
+        [HttpGet]
+        [Route("ofAnimal/{id}")]
+        public async Task<JsonResult> GetFavoritesUsersOfanimal(int id)
+        {
+            var favorites = await _context.Favorites.ToListAsync();
+            if (favorites == null)
+            {
+                return new JsonResult("Nu a putut lua din BD inregistrarile din tabelul Favorites");
+            }
+            List<FavoriteDTO> animalFavorites = new List<FavoriteDTO>();
+
+            foreach (Favorite favorite in favorites)
+            {
+                if (favorite.AnimalId == id)
+                {
+                    FavoriteDTO userFavorite = new FavoriteDTO
+                    {
+                        UserId = favorite.UserId,
+                        AnimalId = favorite.AnimalId
+                    };
+                    animalFavorites.Add(userFavorite);
+                }
+            }
+
+            return new JsonResult(animalFavorites);
+        }
+
+
+        /*// PUT: api/Favorites/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFavorite(int id, Favorite favorite)
+        public async Task<JsonResult> PutFavorite(int id, FavoriteDTO favorite)
         {
             if (id != favorite.AnimalId)
             {
@@ -72,53 +133,136 @@ namespace SaveASoul.Controllers
             }
 
             return NoContent();
-        }
+        }*/
 
         // POST: api/Favorites
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Favorite>> PostFavorite(Favorite favorite)
+        public async Task<JsonResult> PostFavorite(FavoriteDTO favorite)
         {
-            _context.Favorites.Add(favorite);
+
+            if (favorite.AnimalId <= 0 || favorite.UserId <= 0)
+            {
+                return new JsonResult("ids are mandatory and they must be positive");
+            }
+
+            Favorite favoriteForDB = new Favorite
+            {
+                UserId = favorite.UserId,
+                AnimalId = favorite.AnimalId,
+                User = _context.Users.Find(favorite.UserId),
+                Animal = _context.Animals.Find(favorite.AnimalId)
+            };
+
+            _context.Favorites.Add(favoriteForDB);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (FavoriteExists(favorite.AnimalId))
+                if (FavoriteExists(favorite.UserId, favorite.AnimalId))
                 {
-                    return Conflict();
+                    return new JsonResult("This favorite db entry already exists");
                 }
                 else
                 {
                     throw;
                 }
             }
-
-            return CreatedAtAction("GetFavorite", new { id = favorite.AnimalId }, favorite);
+            
+            return new JsonResult(favorite);
         }
 
-        // DELETE: api/Favorites/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Favorite>> DeleteFavorite(int id)
+        // DELETE: api/Favorites/5/2
+        [HttpDelete("{userId}/{animalId}")]
+        public async Task<JsonResult> DeleteFavorite(int userId, int animalId)
         {
-            var favorite = await _context.Favorites.FindAsync(id);
+            var favorite = await _context.Favorites.FindAsync(userId, animalId);
             if (favorite == null)
             {
-                return NotFound();
+                return new JsonResult("Ce vrai tu sa stergi nu se exista");
             }
 
             _context.Favorites.Remove(favorite);
             await _context.SaveChangesAsync();
 
-            return favorite;
+            FavoriteDTO favoriteReturn = new FavoriteDTO
+            {
+                UserId = favorite.UserId,
+                AnimalId = favorite.AnimalId
+            };
+
+            return new JsonResult(favoriteReturn);
         }
 
-        private bool FavoriteExists(int id)
+        // DELETE: api/Favorites/ofUser/2
+        [HttpDelete]
+        [Route("ofUser/{id}")]
+        public async Task<JsonResult> DeleteFavoritesOfUser(int id)
         {
-            return _context.Favorites.Any(e => e.AnimalId == id);
+            var favorites = await _context.Favorites.ToListAsync();
+            if (favorites == null)
+            {
+                return new JsonResult("Ce vrai tu sa stergi nu se exista");
+            }
+
+            List<FavoriteDTO> favoritesReturn = new List<FavoriteDTO>();
+
+            foreach(Favorite favorite in favorites)
+            {
+                if (favorite.UserId == id)
+                {
+                    _context.Favorites.Remove(favorite);
+                    await _context.SaveChangesAsync();
+                    FavoriteDTO favoriteReturn = new FavoriteDTO
+                    {
+                        UserId = favorite.UserId,
+                        AnimalId = favorite.AnimalId
+                    };
+                    favoritesReturn.Add(favoriteReturn);
+                }
+            }     
+
+            return new JsonResult(favoritesReturn);
+        }
+
+        // DELETE: api/Favorites/ofAnimal/2
+        [HttpDelete]
+        [Route("ofAnimal/{id}")]
+        public async Task<JsonResult> DeleteFavoritesOfanimal(int id)
+        {
+            var favorites = await _context.Favorites.ToListAsync();
+            if (favorites == null)
+            {
+                return new JsonResult("Ce vrai tu sa stergi nu se exista");
+            }
+
+            List<FavoriteDTO> favoritesReturn = new List<FavoriteDTO>();
+
+            foreach (Favorite favorite in favorites)
+            {
+                if (favorite.AnimalId == id)
+                {
+                    _context.Favorites.Remove(favorite);
+                    await _context.SaveChangesAsync();
+                    FavoriteDTO favoriteReturn = new FavoriteDTO
+                    {
+                        UserId = favorite.UserId,
+                        AnimalId = favorite.AnimalId
+                    };
+                    favoritesReturn.Add(favoriteReturn);
+                }
+            }
+
+            return new JsonResult(favoritesReturn);
+        }
+
+
+        private bool FavoriteExists(int userId, int animalId)
+        {
+            return _context.Favorites.Any(e => e.AnimalId == animalId && e.UserId == userId);
         }
     }
 }

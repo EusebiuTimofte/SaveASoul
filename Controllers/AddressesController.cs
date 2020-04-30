@@ -9,11 +9,13 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Save_A_Soul.Contexts;
 using Save_A_Soul.DTOs;
 using Save_A_Soul.Models;
+using SaveASoul.Cors;
 
 namespace SaveASoul.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class AddressesController : ControllerBase
     {
         private readonly Context _context;
