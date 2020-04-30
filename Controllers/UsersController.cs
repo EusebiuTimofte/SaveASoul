@@ -12,7 +12,7 @@ namespace SaveASoul.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AllowCrossSite]
+    
     public class UsersController : Controller
     {
         private readonly Context _context;

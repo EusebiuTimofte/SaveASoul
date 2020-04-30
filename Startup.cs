@@ -32,6 +32,8 @@ namespace SaveASoul
             services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
+            services.AddCors();
+
             // services.AddDbContext<Context>(options =>
             // options.UseSqlServer(Configuration.GetConnectionString("Context")));
             services.AddDbContext<Context>(options => options.UseLazyLoadingProxies()
@@ -47,6 +49,11 @@ namespace SaveASoul
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
             app.UseRouting();
 
