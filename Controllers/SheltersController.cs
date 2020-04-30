@@ -8,11 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Save_A_Soul.Contexts;
 using Save_A_Soul.Models;
 using Save_A_Soul.DTOs;
+using SaveASoul.Cors;
 
 namespace SaveASoul.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowCrossSite]
     public class SheltersController : ControllerBase
     {
         private readonly Context _context;
