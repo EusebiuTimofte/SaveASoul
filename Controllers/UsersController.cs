@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Save_A_Soul.Contexts;
 using Save_A_Soul.Models;
-using SaveASoul.Cors;
-
 namespace SaveASoul.Controllers
 {
     [Route("api/[controller]")]

@@ -10,8 +10,6 @@ using Save_A_Soul.Models;
 using Save_A_Soul.DTOs;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using SaveASoul.Cors;
-
 namespace SaveASoul.Controllers
 {
     [Route("api/[controller]")]
