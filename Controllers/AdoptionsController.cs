@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Save_A_Soul.Contexts;
+using Save_A_Soul.DTOs;
 using Save_A_Soul.Models;
 
 namespace SaveASoul.Controllers
@@ -23,14 +24,28 @@ namespace SaveASoul.Controllers
 
         // GET: api/Adoptions
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Adoption>>> GetAdoptions()
+        public async Task<ActionResult> GetAdoptions()
         {
-            return await _context.Adoptions.ToListAsync();
+            var adoptions = await _context.Adoptions.ToListAsync();
+
+            List<AdoptionDTO> dto = new List<AdoptionDTO>();
+
+            foreach(Adoption adoption in adoptions)
+            {
+                dto.Add(new AdoptionDTO
+                {
+                    UserId = adoption.UserId,
+                    AnimalId = adoption.AnimalId,
+                    AdoptionTime = adoption.AdoptionTime
+                });
+            }
+
+            return new JsonResult(dto);
         }
 
         // GET: api/Adoptions/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Adoption>> GetAdoption(int id)
+        public async Task<ActionResult> GetAdoption(int id)
         {
             var adoption = await _context.Adoptions.FindAsync(id);
 
@@ -39,19 +54,32 @@ namespace SaveASoul.Controllers
                 return NotFound();
             }
 
-            return adoption;
+            AdoptionDTO dto = new AdoptionDTO
+            {
+                UserId = adoption.UserId,
+                AnimalId = adoption.AnimalId,
+                AdoptionTime = adoption.AdoptionTime
+            };
+            return new JsonResult(dto);
         }
 
         // PUT: api/Adoptions/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAdoption(int id, Adoption adoption)
+        public async Task<IActionResult> PutAdoption(int id, AdoptionDTO dto)
         {
-            if (id != adoption.AnimalId)
+            if (id != dto.AnimalId)
             {
                 return BadRequest();
             }
+
+            Adoption adoption = new Adoption
+            {
+                UserId = dto.UserId,
+                AnimalId = dto.AnimalId,
+                AdoptionTime = dto.AdoptionTime
+            };
 
             _context.Entry(adoption).State = EntityState.Modified;
 
@@ -78,9 +106,18 @@ namespace SaveASoul.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Adoption>> PostAdoption(Adoption adoption)
+        public async Task<ActionResult> PostAdoption(AdoptionDTO dto)
         {
+
+            Adoption adoption = new Adoption
+            {
+                AdoptionTime = dto.AdoptionTime,
+                UserId = dto.UserId,
+                AnimalId = dto.AnimalId
+            };
+
             _context.Adoptions.Add(adoption);
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -97,7 +134,7 @@ namespace SaveASoul.Controllers
                 }
             }
 
-            return CreatedAtAction("GetAdoption", new { id = adoption.AnimalId }, adoption);
+            return new JsonResult(dto);
         }
 
         // DELETE: api/Adoptions/5

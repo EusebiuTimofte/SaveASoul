@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Save_A_Soul.Contexts;
+using Save_A_Soul.DTOs;
 using Save_A_Soul.Models;
 
 namespace SaveASoul.Controllers
@@ -23,14 +24,34 @@ namespace SaveASoul.Controllers
 
         // GET: api/Employees
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
+        public async Task<ActionResult> GetEmployees()
         {
-            return await _context.Employees.ToListAsync();
+            var employees = await _context.Employees.ToListAsync();
+
+            List<EmployeeDTO> dto = new List<EmployeeDTO>();
+            
+            foreach(Employee emp in employees)
+            {
+                dto.Add(new EmployeeDTO
+                {
+                    Id = emp.Id,
+                    FirstName = emp.FirstName,
+                    LastName = emp.LastName,
+                    BirthDate = emp.BirthDate,
+                    Salary = emp.Salary,
+                    JobType = emp.JobType,
+                    Position = emp.Position,
+                    ShelterId = (emp.Shelter != null) ? emp.Shelter.Id : 0
+                });
+            }
+
+            return new JsonResult(dto);
+
         }
 
         // GET: api/Employees/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployee(int id)
+        public async Task<ActionResult> GetEmployee(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
 
@@ -39,21 +60,45 @@ namespace SaveASoul.Controllers
                 return NotFound();
             }
 
-            return employee;
+            EmployeeDTO emp = new EmployeeDTO {
+
+                Id = employee.Id,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                BirthDate = employee.BirthDate,
+                Salary = employee.Salary,
+                JobType = employee.JobType,
+                Position = employee.Position,
+                ShelterId = (employee.Shelter != null) ? employee.Shelter.Id : 0
+            };
+
+            return new JsonResult(emp);
         }
 
         // PUT: api/Employees/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployee(int id, Employee employee)
+        public async Task<IActionResult> PutEmployee(int id, EmployeeDTO dto)
         {
-            if (id != employee.Id)
+            if (id != dto.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(employee).State = EntityState.Modified;
+            Employee emp = new Employee
+            { 
+                Id = dto.Id,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                BirthDate = dto.BirthDate,
+                Salary = dto.Salary,
+                JobType = dto.JobType,
+                Position = dto.Position,
+                Shelter = _context.Shelters.Find(dto.ShelterId)
+            };
+
+            _context.Entry(emp).State = EntityState.Modified;
 
             try
             {
@@ -78,12 +123,39 @@ namespace SaveASoul.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
+        public async Task<ActionResult> PostEmployee(EmployeeDTO dto)
         {
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
+            Employee emp = new Employee
+            {
+                Id = dto.Id,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                BirthDate = dto.BirthDate,
+                Salary = dto.Salary,
+                JobType = dto.JobType,
+                Position = dto.Position,
+                Shelter = _context.Shelters.Find(dto.ShelterId)
+            };
 
-            return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
+            _context.Employees.Add(emp);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if (EmployeeExists(emp.Id))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            dto.Id = emp.Id;
+            return new JsonResult(dto);
         }
 
         // DELETE: api/Employees/5
