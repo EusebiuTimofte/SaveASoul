@@ -23,8 +23,8 @@
 //schimbarile mele
 .vs/SaveASoul/v16/Server/sqlite3
 
-bin
-obj
+bin/
+obj/
 packages
 _ReSharper.*
 

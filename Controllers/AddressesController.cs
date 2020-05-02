@@ -115,20 +115,19 @@ namespace SaveASoul.Controllers
         {
             Address address = new Address
             {
-               Id=addressdto.Id,
                City=addressdto.City,
                Street=addressdto.Street,
                StreetNumber=addressdto.StreetNumber
             };
 
-            EntityEntry<Address> add = _context.Addresses.Add(address);
+            _context.Addresses.Add(address);
 
             await _context.SaveChangesAsync();
             //TODO: returneaza id=0
             //_context.Entry(add).State = EntityState.Modified;
             // return CreatedAtAction("GetAnimal", new { id = add.Entity.Id }, animal);
-            address.Id = addressdto.Id;
-            return new JsonResult(address);
+            addressdto.Id = address.Id;
+            return new JsonResult(addressdto);
         }
 
         // DELETE: api/Addresses/5
